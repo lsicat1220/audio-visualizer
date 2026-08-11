@@ -1,7 +1,7 @@
 add_library(logic STATIC
 	./fft.c
 	./complex.c
-	./wav.c
+	./audio.c
 )		
 
 target_link_libraries(logic PRIVATE m)
