@@ -11,6 +11,6 @@ typedef struct {
 	int num_samples;
 } PCM;
 
-int readWav(FILE* file, PCM* pcm);
+int readWav(FILE* file);
 
 #endif

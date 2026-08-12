@@ -6,7 +6,7 @@
 
 
 
-int readWav(FILE* file, PCM* output) {
+int readWav(FILE* file) {
 	unsigned char master[12];
 	if (fread(master, 1, 12, file) != 12) {
 		fprintf(stderr, "ERROR: Reading .wav header failed\n");
