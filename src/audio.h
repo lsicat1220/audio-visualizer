@@ -6,9 +6,9 @@
 typedef struct {
 	int freq;
 	int num_channels;
-	int block_align;
-	int bytes_per_sample;
-	int num_samples;
+	int bits_per_sample;
+	size_t size;
+	size_t data_offset;
 } PCM;
 
 int readWav(FILE* file);
