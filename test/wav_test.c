@@ -23,6 +23,10 @@ int main() {
 	if (readWavHeader(buffer, size, &pcm)) {
 		return -1;
 	}
+	printf("Freq = %d\n", pcm.freq);
+	printf("Bits per sample: %d\n", pcm.bits_per_sample);
+	printf("Channels: %d\n", pcm.num_channels);
+	printf("Size: %lu\n", pcm.size);
 	SDL_AudioSpec spec;
 	if (convertPCMtoSDLSpec(&pcm, &spec)) {
 		return -1;
@@ -30,7 +34,7 @@ int main() {
 	
 	SDL_Init(SDL_INIT_AUDIO);
 
-	SDL_AudioStream* stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL, NULL, NULL);
+	SDL_AudioStream* stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
 	SDL_ResumeAudioStreamDevice(stream);
 	SDL_PutAudioStreamData(stream, buffer  + pcm.data_offset, pcm.size);
 	int running = 1;
