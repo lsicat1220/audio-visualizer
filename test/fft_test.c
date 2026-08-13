@@ -5,6 +5,14 @@
 #include "../src/complex.h"
 #include "../src/fft.h"
 
+#define record_time(function) \
+	do { \
+		clock_t start = clock(); \
+		function; \
+		clock_t end = clock(); \
+		double exe_time = (double) (end - start) / CLOCKS_PER_SEC; \
+		printf("Execution time: %lf\n", exe_time); \
+	} while (0) \
 
 double f(double x) {
 	return sin(2 * M_PI * 15 * x) + sin(2 * M_PI * 2.3 * x);
@@ -32,39 +40,40 @@ int main() {
 	for (int i = 0; i < N; i++) {
 		y[i] = f(x[i]);
 	}
-	
-	clock_t start = clock();
+	Complex* naive_output;
+	Complex* recursive_output;
+	Complex* new_output;
+	Complex* dft_output;
+	printf("DFT output:\n");
+	record_time({
+		Complex* input = doubleToComplexArr(y, N);
+		dft_output = dft(input, N);
+	});
 
-	Complex* input = doubleToComplexArr(y, N);
-	Complex* output1 = naive_fft(input, N, 1);
+	printf("Naive output:\n");
+	record_time({
+		Complex* input = doubleToComplexArr(y, N);
+		naive_output = naive_fft(input, N, 1);
+	});
 
-	clock_t end = clock();
-	double exe_time = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("Naive FFT time elapsed: %lf\n", exe_time);
+	printf("Recursive output:\n");
+	record_time({
+		Complex* input = doubleToComplexArr(y, N);
+		recursive_output = recursive_fft(input, N, 1);
+	});
 
-	start = clock();
-
-	input = doubleToComplexArr(y, N);
-	Complex* output2 = fft(input, N, 1);
-
-	end = clock();
-	exe_time = ((double) (end-start)) / CLOCKS_PER_SEC;
-	printf("New FFT time elapsed: %lf\n", exe_time);
-
+	printf("New output:\n");
+	record_time({
+		Complex* input = doubleToComplexArr(y, N);
+		new_output = fft(input, N);
+	});
 	int equal = 1;
 	for (int i = 0; i < N; i++) {
-		if (magnitude(output1[i]) - magnitude(output2[i]) > 0.000001) {
-			equal = 0;
+		if (magnitude(dft_output[i]) - magnitude(new_output[i]) > 0.000001) {
+			equal = 0; 
 			break;
 		}
 	}
-	printf("Equal: %d\n", equal);
-
-	free(x);
-	free(y);
-	free(input);
-	free(output1);
-	free(output2);
-	// free(output2);
+	printf("Equal = %d\n", equal);
 	return 0;
 }
