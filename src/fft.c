@@ -20,6 +20,42 @@ Complex* dft(Complex* arr, int N) {
 	return output;
 }
 
+Complex* naive_fft(Complex* arr, int N, int stride) {
+	Complex* output = malloc(sizeof(Complex) * N);
+
+	if ((N & N - 1) != 0)	{
+		fputs("ERROR: Must be a power of 2\n", stderr);
+		return NULL;
+	} else if (N == 1) {
+		output[0] = arr[0];
+		return output;
+	}
+
+	Complex* evens = naive_fft(arr, N/2, stride * 2);
+	Complex* odds = naive_fft(arr + stride, N/2, stride * 2);
+	
+	for(int k = 0; k < N/2; k++) {
+		Complex omega = complexExp(-2 * M_PI * ((double)k / N));
+		Complex product = complexMult(odds[k], omega);
+		output[k] = complexAdd(evens[k], product);
+		product.real *= -1;
+		product.imag *= -1;
+		output[k + N/2] = complexAdd(evens[k], product);
+	}
+
+	free(evens);
+	free(odds);
+	return output;
+}
+
+int whatPowerOf2 (int N) {
+	int output = 0;
+	for (; N != 0; N>>=1) {
+		output++;
+	}
+	return output;
+}
+
 Complex* fft(Complex* arr, int N, int stride) {
 	Complex* output = malloc(sizeof(Complex) * N);
 
@@ -31,16 +67,31 @@ Complex* fft(Complex* arr, int N, int stride) {
 		return output;
 	}
 
+	int power = whatPowerOf2(N);
+	static Complex* factors = NULL;	
+	if (factors == NULL) {
+		factors = malloc(sizeof(Complex) * (power + 1));
+		memset(factors, 0, sizeof(Complex) * (power + 1));
+	} 
+	if (factors[power].real + factors[power].imag == 0) {
+		factors[power] = complexExp(-2 * M_PI / (double)N);	
+	}
+
 	Complex* evens = fft(arr, N/2, stride * 2);
 	Complex* odds = fft(arr + stride, N/2, stride * 2);
-	
+	Complex omega = {1.0, 0};	
 	for(int k = 0; k < N/2; k++) {
-		Complex omega = complexExp(-2 * M_PI * ((double)k / N));
-		Complex product = complexMult(odds[k], omega);
-		output[k] = complexAdd(evens[k], product);
-		product.real *= -1;
-		product.imag *= -1;
-		output[k + N/2] = complexAdd(evens[k], product);
+		Complex rhs;
+		if (k == 0) {
+			rhs = odds[k];
+		} else {
+			omega = complexMult(omega, factors[power]);	
+			rhs = complexMult(odds[k], omega);
+		}
+		output[k] = complexAdd(evens[k], rhs);
+		rhs.real *= -1;
+		rhs.imag *= -1;
+		output[k + N/2] = complexAdd(evens[k], rhs);
 	}
 
 	free(evens);

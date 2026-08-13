@@ -36,24 +36,24 @@ int main() {
 	clock_t start = clock();
 
 	Complex* input = doubleToComplexArr(y, N);
-	Complex* dft_output = dft(input, N);
+	Complex* output1 = naive_fft(input, N, 1);
 
 	clock_t end = clock();
 	double exe_time = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("DFT time elapsed: %lf\n", exe_time);
+	printf("Naive FFT time elapsed: %lf\n", exe_time);
 
 	start = clock();
 
 	input = doubleToComplexArr(y, N);
-	Complex* fft_output = fft(input, N, 1);
+	Complex* output2 = fft(input, N, 1);
 
 	end = clock();
 	exe_time = ((double) (end-start)) / CLOCKS_PER_SEC;
-	printf("FFT time elapsed: %lf\n", exe_time);
+	printf("New FFT time elapsed: %lf\n", exe_time);
 
 	int equal = 1;
 	for (int i = 0; i < N; i++) {
-		if (magnitude(fft_output[i]) - magnitude(dft_output[i]) > 0.000001) {
+		if (magnitude(output1[i]) - magnitude(output2[i]) > 0.000001) {
 			equal = 0;
 			break;
 		}
@@ -63,8 +63,8 @@ int main() {
 	free(x);
 	free(y);
 	free(input);
-	free(dft_output);
-	free(fft_output);
+	free(output1);
+	free(output2);
 	// free(output2);
 	return 0;
 }
