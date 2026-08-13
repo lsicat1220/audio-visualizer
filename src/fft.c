@@ -102,12 +102,12 @@ Complex* recursive_fft(Complex* arr, int N, int stride) {
 	return output;
 }
 
-int reverseBits(int power, int input) {
+int reverseBits(int power, unsigned int input) {
 	int output = 0;
-	for (int i = 0; i < (power+1) / 2; i++) {
-		int left_bit = (input>>(power - i)) & 1;
+	for (int i = 0; i < power / 2; i++) {
+		int left_bit = (input>>(power - 1 - i)) & 1;
 		int right_bit = (input>>i) & 1;
-		output |= (left_bit<<i) | (right_bit<<(power - i));	
+		output |= (left_bit<<i) | (right_bit<<(power - 1 - i));	
 	}
 	return output;
 }
