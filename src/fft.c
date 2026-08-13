@@ -123,9 +123,12 @@ Complex* fft(Complex* arr, int N) {
 	}	
 	for (int stride = 1; stride < N; stride *= 2) {
 		for (int k = 0; k < stride; k++) {
-			Complex twiddle = complexExp(-2 * M_PI * k / (double)(stride * 2));
+			Complex twiddle = {1.0, 0}; 
+			if (stride > 1) {
+				twiddle = complexExp(-2 * M_PI * k / (double)(stride * 2));
+			}
 			for (int i = k; i < N; i += stride * 2) {
-				Complex rhs = complexMult(output[i + stride], twiddle);
+				Complex rhs = stride == 1 ? output[i + stride] : complexMult(output[i + stride], twiddle);
 				Complex sum1 = complexAdd(output[i], rhs);
 				rhs.real *= -1;
 				rhs.imag *= -1;
