@@ -2,7 +2,22 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <SDL3/SDL_audio.h>
 #include "audio.h"
+
+int convertPCMtoSDLSpec(PCM* pcm, SDL_AudioSpec* output) {
+	output->channels = pcm->num_channels;
+	output->freq = pcm->freq;
+	if (pcm->bits_per_sample == 8) {
+		output->format = SDL_AUDIO_U8;
+	} else if (pcm->bits_per_sample == 16) {
+		output->format = SDL_AUDIO_S16;
+	} else {
+		fprintf(stderr, "ERROR: Invalid or unsupported bits per sample\n");
+		return -1;
+	}
+	return 0;	
+}
 
 int readWavHeader(unsigned char* buffer, size_t size, PCM* pcm) {
 	// Ensure a state for the pcm that the function can check
@@ -30,7 +45,7 @@ int readWavHeader(unsigned char* buffer, size_t size, PCM* pcm) {
 			((uint32_t)ptr[6]<<16) | 
 			((uint32_t)ptr[7]<<24);
 		if (memcmp(ptr, "fmt ", 4) == 0) {
-			if (*(ptr + 8) == 0x01) {
+			if (*(ptr + 8) != 0x01) {
 				fprintf(stderr, "ERROR: Unsupported WAV format\n");
 				return -1;
 			}	
@@ -39,7 +54,7 @@ int readWavHeader(unsigned char* buffer, size_t size, PCM* pcm) {
 				((uint32_t)ptr[18]<<16) | 
 				((uint32_t)ptr[19]<<24);
 			pcm->num_channels = ((uint32_t) ptr[6]) | ((uint32_t) ptr[7]<<8);
-			pcm->bits_per_sample = ((uint32_t) ptr[24]) | ((uint32_t) ptr[25]<<8);
+			pcm->bits_per_sample = ((uint32_t) ptr[22]) | ((uint32_t) ptr[23]<<8);
 		} else if (memcmp(ptr, "data", 4) == 0) {
 			pcm->size = ((uint32_t) ptr[4]) | 
 				((uint32_t)ptr[5]<<8) | 
