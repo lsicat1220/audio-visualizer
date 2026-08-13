@@ -54,7 +54,7 @@ int whatPowerOf2 (int N) {
 		fputs("ERROR: Must be a power of 2\n", stderr);
 		return -1;
 	}
-	for (; N != 0; N>>=1) {
+	for (; N > 1; N>>=1) {
 		output++;
 	}
 	return output;
@@ -112,6 +112,31 @@ int reverseBits(int power, unsigned int input) {
 	return output;
 }
 
+Complex* fft(Complex* arr, int N) {
+	int power = whatPowerOf2(N);
+	if (power == -1) {
+		return NULL;
+	}
+	Complex* output = malloc(sizeof(Complex) * N);
+	for (int i = 0; i < N; i++) {
+		output[i] = arr[reverseBits(power, i)];
+	}	
+	for (int stride = 1; stride < N; stride *= 2) {
+		for (int k = 0; k < stride; k++) {
+			Complex twiddle = complexExp(-2 * M_PI * k / (double)(stride * 2));
+			for (int i = k; i < N; i += stride * 2) {
+				Complex rhs = complexMult(output[i + stride], twiddle);
+				Complex sum1 = complexAdd(output[i], rhs);
+				rhs.real *= -1;
+				rhs.imag *= -1;
+				Complex sum2 = complexAdd(output[i], rhs);
+				output[i] = sum1;
+				output[i + stride] = sum2;
+			}	
+		}
+	}
+	return output;
+}
 
 
 
