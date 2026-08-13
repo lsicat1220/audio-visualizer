@@ -49,11 +49,11 @@ int readWavHeader(unsigned char* buffer, size_t size, PCM* pcm) {
 				fprintf(stderr, "ERROR: Unsupported WAV format\n");
 				return -1;
 			}	
-			pcm->freq = ((uint32_t) ptr[16]) | 
-				((uint32_t)ptr[17]<<8) | 
-				((uint32_t)ptr[18]<<16) | 
-				((uint32_t)ptr[19]<<24);
-			pcm->num_channels = ((uint32_t) ptr[6]) | ((uint32_t) ptr[7]<<8);
+			pcm->freq = ((uint32_t) ptr[12]) | 
+				((uint32_t)ptr[13]<<8) | 
+				((uint32_t)ptr[14]<<16) | 
+				((uint32_t)ptr[15]<<24);
+			pcm->num_channels = ((uint32_t) ptr[10]) | ((uint32_t) ptr[11]<<8);
 			pcm->bits_per_sample = ((uint32_t) ptr[22]) | ((uint32_t) ptr[23]<<8);
 		} else if (memcmp(ptr, "data", 4) == 0) {
 			pcm->size = ((uint32_t) ptr[4]) | 
