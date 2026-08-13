@@ -3,7 +3,7 @@
 
 #include "complex.h"
 
-Complex* fft(Complex* arr, int N, int stride);
+Complex* recursive_fft(Complex* arr, int N, int stride);
 
 Complex* naive_fft(Complex* arr, int N, int stride);
 

@@ -50,24 +50,27 @@ Complex* naive_fft(Complex* arr, int N, int stride) {
 
 int whatPowerOf2 (int N) {
 	int output = 0;
+	if ((N & N - 1) != 0)	{
+		fputs("ERROR: Must be a power of 2\n", stderr);
+		return -1;
+	}
 	for (; N != 0; N>>=1) {
 		output++;
 	}
 	return output;
 }
 
-Complex* fft(Complex* arr, int N, int stride) {
+Complex* recursive_fft(Complex* arr, int N, int stride) {
 	Complex* output = malloc(sizeof(Complex) * N);
-
-	if ((N & N - 1) != 0)	{
-		fputs("ERROR: Must be a power of 2\n", stderr);
-		return NULL;
-	} else if (N == 1) {
+	if (N == 1) {
 		output[0] = arr[0];
 		return output;
 	}
 
 	int power = whatPowerOf2(N);
+	if (power == -1) {
+		return NULL;
+	}
 	static Complex* factors = NULL;	
 	if (factors == NULL) {
 		factors = malloc(sizeof(Complex) * (power + 1));
@@ -77,8 +80,8 @@ Complex* fft(Complex* arr, int N, int stride) {
 		factors[power] = complexExp(-2 * M_PI / (double)N);	
 	}
 
-	Complex* evens = fft(arr, N/2, stride * 2);
-	Complex* odds = fft(arr + stride, N/2, stride * 2);
+	Complex* evens = recursive_fft(arr, N/2, stride * 2);
+	Complex* odds = recursive_fft(arr + stride, N/2, stride * 2);
 	Complex omega = {1.0, 0};	
 	for(int k = 0; k < N/2; k++) {
 		Complex rhs;
@@ -98,3 +101,7 @@ Complex* fft(Complex* arr, int N, int stride) {
 	free(odds);
 	return output;
 }
+
+
+
+
