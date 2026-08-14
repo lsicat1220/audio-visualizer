@@ -31,7 +31,7 @@ double* linspace(int time, int N) {
 
 int main() {
 	printf("Hello world!\n");
-	int time = 8;
+	int time = 4;
 	int f_s = 512;
 	int N = time * f_s;
 	
