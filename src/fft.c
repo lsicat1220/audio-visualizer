@@ -118,7 +118,7 @@ Complex* fft(double* arr, int N, Complex* output) {
 	}
 	int stored_num = (N / 2) - 1;
 	Complex* twiddles = malloc(sizeof(Complex) * ((N/2) - 1));
-	for (int k = 1; k < stored_num; k++) {
+	for (int k = 1; k <= stored_num; k++) {
 		twiddles[k - 1] = complexExp(-2 * M_PI * (double)k / N);
 	}
 	for (int i = 0; i < N; i++) {
@@ -127,13 +127,14 @@ Complex* fft(double* arr, int N, Complex* output) {
 	}	
 	for (int stride = 1; stride < N; stride *= 2) {
 		for (int k = 0; k < stride; k++) {
-			Complex twiddle = {1.0, 0}; 
-			if (stride > 1 && k != 0) {
-				int index = (k * N / (stride * 2)) - 1;
-				twiddle = twiddles[index];
-			}
 			for (int i = k; i < N; i += stride * 2) {
-				Complex rhs = stride == 1 ? output[i + stride] : complexMult(output[i + stride], twiddle);
+				Complex rhs;
+				if (k != 0) {
+					int index = (k * N / (stride * 2)) - 1;
+					rhs = complexMult(output[i + stride], twiddles[index]);
+				} else {
+					rhs = output[i + stride];
+				}
 				Complex sum1 = complexAdd(output[i], rhs);
 				rhs.real *= -1;
 				rhs.imag *= -1;
