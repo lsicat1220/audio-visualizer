@@ -117,14 +117,20 @@ Complex* fft(Complex* arr, int N) {
 		return NULL;
 	}
 	Complex* output = malloc(sizeof(Complex) * N);
+	int stored_num = (N / 2) - 1;
+	Complex* twiddles = malloc(sizeof(Complex) * ((N/2) - 1));
+	for (int k = 1; k < stored_num; k++) {
+		twiddles[k - 1] = complexExp(-2 * M_PI * (double)k / N);
+	}
 	for (int i = 0; i < N; i++) {
 		output[i] = arr[reverseBits(power, i)];
 	}	
 	for (int stride = 1; stride < N; stride *= 2) {
 		for (int k = 0; k < stride; k++) {
 			Complex twiddle = {1.0, 0}; 
-			if (stride > 1) {
-				twiddle = complexExp(-2 * M_PI * k / (double)(stride * 2));
+			if (stride > 1 && k != 0) {
+				int index = (k * N / (stride * 2)) - 1;
+				twiddle = twiddles[index];
 			}
 			for (int i = k; i < N; i += stride * 2) {
 				Complex rhs = stride == 1 ? output[i + stride] : complexMult(output[i + stride], twiddle);
