@@ -9,6 +9,6 @@ Complex* naive_fft(Complex* arr, int N, int stride);
 
 Complex* dft(Complex* arr, int N);
  
-Complex* fft(Complex* arr, int N);
+Complex* fft(double* arr, int N, Complex* output);
 
 #endif

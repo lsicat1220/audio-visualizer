@@ -111,19 +111,19 @@ int reverseBits(int power, unsigned int input) {
 	return output;
 }
 
-Complex* fft(Complex* arr, int N) {
+Complex* fft(double* arr, int N, Complex* output) {
 	int power = whatPowerOf2(N);
 	if (power == -1) {
 		return NULL;
 	}
-	Complex* output = malloc(sizeof(Complex) * N);
 	int stored_num = (N / 2) - 1;
 	Complex* twiddles = malloc(sizeof(Complex) * ((N/2) - 1));
 	for (int k = 1; k < stored_num; k++) {
 		twiddles[k - 1] = complexExp(-2 * M_PI * (double)k / N);
 	}
 	for (int i = 0; i < N; i++) {
-		output[i] = arr[reverseBits(power, i)];
+		output[i].real = arr[reverseBits(power, i)];
+		output[i].imag = 0;
 	}	
 	for (int stride = 1; stride < N; stride *= 2) {
 		for (int k = 0; k < stride; k++) {
@@ -143,6 +143,7 @@ Complex* fft(Complex* arr, int N) {
 			}	
 		}
 	}
+	free(twiddles);
 	return output;
 }
 

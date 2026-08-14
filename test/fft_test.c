@@ -62,10 +62,10 @@ int main() {
 		recursive_output = recursive_fft(input, N, 1);
 	});
 
+	Complex* output = malloc(sizeof(Complex) * N);
 	printf("New output:\n");
 	record_time({
-		Complex* input = doubleToComplexArr(y, N);
-		new_output = fft(input, N);
+		new_output = fft(y, N, output);
 	});
 	int equal = 1;
 	for (int i = 0; i < N; i++) {
