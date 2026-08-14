@@ -130,7 +130,7 @@ Complex* fft(double* arr, int N, Complex* output) {
 			for (int i = k; i < N; i += stride * 2) {
 				Complex rhs;
 				if (k != 0) {
-					int index = (k * N / (stride * 2)) - 1;
+					int index = (k * (N / (stride * 2))) - 1;
 					rhs = complexMult(output[i + stride], twiddles[index]);
 				} else {
 					rhs = output[i + stride];
