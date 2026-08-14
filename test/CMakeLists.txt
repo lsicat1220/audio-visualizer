@@ -3,6 +3,7 @@ set(list
 	complex_test
 	wav_test
 	bitreverse_test
+	fft_stress_test
 )
 
 foreach(file IN LISTS list)
